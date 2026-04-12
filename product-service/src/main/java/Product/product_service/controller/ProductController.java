@@ -87,4 +87,10 @@ public class ProductController {
         );
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/price-greater-than")
+    public ResponseEntity<List<Product>> getProductsWithPriceGreaterThan(@RequestParam Double price) {
+        List<Product> products = productService.getProductsWithPriceGreaterThan(price);
+        return ResponseEntity.ok(products);
+    }
 }

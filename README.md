@@ -7,6 +7,7 @@
 - 1D Service Layer
 - 1E Controller Layer (CRUD APIs)
 - 1F Pagination + Sorting + Java Streams
+- 1G Native Query
 
 ## Services
 - product-service (Port 8081)
@@ -24,25 +25,12 @@
 - carts
 - cart_items
 
-## Layered Architecture
-Both services follow layered architecture:
+## 1G Native Query Feature
+Added a native SQL query in `ProductRepository` to fetch all products whose price is greater than a given input value.
 
-- Controller
-- Service
-- Repository
-- Entity
+### Native Query API
+- `GET /products/price-greater-than?price=1000`
 
-## 1F Features Added
-In `product-service`:
-- Pagination using Spring Data JPA
-- Sorting using `Pageable` and `Sort`
-- Java Streams filtering by keyword
-- Java Streams filtering by minimum price
-- Java Streams transformation from `Product` to `ProductDTO`
-
-## New API
-### Product Service
-- `GET /products/paged?page=0&size=5&sortBy=price&sortDir=asc`
-- optional query params:
-  - `keyword`
-  - `minPrice`
+### SQL Used
+```sql
+SELECT * FROM products WHERE price > ?1

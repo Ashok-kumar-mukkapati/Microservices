@@ -107,4 +107,8 @@ public class ProductService {
 
         return response;
     }
+
+    public List<Product> getProductsWithPriceGreaterThan(Double price) {
+        return productRepository.findProductsWithPriceGreaterThan(price);
+    }
 }
