@@ -12,6 +12,8 @@
 
 \- 1D Service Layer
 
+\- 1E Controller Layer (CRUD APIs)
+
 
 
 \## Services
@@ -62,9 +64,7 @@ Both services follow layered architecture:
 
 
 
-\## Service Layer Added
-
-
+\## Service Layer
 
 \### product-service
 
@@ -101,4 +101,40 @@ Both services follow layered architecture:
 \- delete cart
 
 \- delete cart item
+
+
+
+\## Controller Layer APIs
+
+
+
+\### Product Service APIs
+
+\- `POST /products`
+
+\- `GET /products`
+
+\- `GET /products/{id}`
+
+\- `PUT /products/{id}`
+
+\- `DELETE /products/{id}`
+
+
+
+\### Cart Service APIs
+
+\- `POST /carts`
+
+\- `GET /carts`
+
+\- `GET /carts/{id}`
+
+\- `POST /carts/items`
+
+\- `GET /carts/items`
+
+\- `DELETE /carts/{id}`
+
+\- `DELETE /carts/items/{id}`
 
