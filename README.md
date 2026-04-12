@@ -46,3 +46,15 @@ Client → cart-service → product-service → validation → save cart item
 
 ### WebClient Base URL
 - `http://localhost:8081`
+
+## 1H WebClient Integration
+
+cart-service calls product-service using Spring WebClient.
+
+### Validations:
+- Product existence check
+- Stock availability check
+
+### APIs:
+- POST /carts/items
+- GET /carts/items
