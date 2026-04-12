@@ -1,140 +1,48 @@
-\# Microservices Exercise
+# Microservices Exercise
 
+## Completed Steps
+- 1A Setup
+- 1B Entity Layer
+- 1C Repository Layer
+- 1D Service Layer
+- 1E Controller Layer (CRUD APIs)
+- 1F Pagination + Sorting + Java Streams
 
+## Services
+- product-service (Port 8081)
+- cart-service (Port 8082)
 
-\## Completed Steps
+## Databases
+- product_db
+- cart_db
 
-\- 1A Setup
+## Tables
+### product_db
+- products
 
-\- 1B Entity Layer
+### cart_db
+- carts
+- cart_items
 
-\- 1C Repository Layer
-
-\- 1D Service Layer
-
-\- 1E Controller Layer (CRUD APIs)
-
-
-
-\## Services
-
-\- product-service (Port 8081)
-
-\- cart-service (Port 8082)
-
-
-
-\## Databases
-
-\- product\_db
-
-\- cart\_db
-
-
-
-\## Tables
-
-\### product\_db
-
-\- products
-
-
-
-\### cart\_db
-
-\- carts
-
-\- cart\_items
-
-
-
-\## Layered Architecture
-
+## Layered Architecture
 Both services follow layered architecture:
 
+- Controller
+- Service
+- Repository
+- Entity
 
+## 1F Features Added
+In `product-service`:
+- Pagination using Spring Data JPA
+- Sorting using `Pageable` and `Sort`
+- Java Streams filtering by keyword
+- Java Streams filtering by minimum price
+- Java Streams transformation from `Product` to `ProductDTO`
 
-\- Controller
-
-\- Service
-
-\- Repository
-
-\- Entity
-
-
-
-\## Service Layer
-
-\### product-service
-
-`ProductService` includes:
-
-\- create product
-
-\- get all products
-
-\- get product by id
-
-\- update product
-
-\- delete product
-
-\- validate stock
-
-
-
-\### cart-service
-
-`CartService` includes:
-
-\- create cart
-
-\- get all carts
-
-\- get cart by id
-
-\- add cart item
-
-\- get all cart items
-
-\- delete cart
-
-\- delete cart item
-
-
-
-\## Controller Layer APIs
-
-
-
-\### Product Service APIs
-
-\- `POST /products`
-
-\- `GET /products`
-
-\- `GET /products/{id}`
-
-\- `PUT /products/{id}`
-
-\- `DELETE /products/{id}`
-
-
-
-\### Cart Service APIs
-
-\- `POST /carts`
-
-\- `GET /carts`
-
-\- `GET /carts/{id}`
-
-\- `POST /carts/items`
-
-\- `GET /carts/items`
-
-\- `DELETE /carts/{id}`
-
-\- `DELETE /carts/items/{id}`
-
+## New API
+### Product Service
+- `GET /products/paged?page=0&size=5&sortBy=price&sortDir=asc`
+- optional query params:
+  - `keyword`
+  - `minPrice`

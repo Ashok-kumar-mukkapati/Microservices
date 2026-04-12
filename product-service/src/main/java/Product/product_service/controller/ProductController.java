@@ -1,6 +1,7 @@
 package Product.product_service.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import Product.product_service.ProductEntity.Product;
@@ -61,13 +63,28 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable Integer id) {
-        Product product = productService.getProductById(id);
+        Product existingProduct = productService.getProductById(id);
 
-        if (product == null) {
+        if (existingProduct == null) {
             return ResponseEntity.notFound().build();
         }
 
         productService.deleteProduct(id);
         return ResponseEntity.ok("Product deleted successfully");
+    }
+
+    @GetMapping("/paged")
+    public ResponseEntity<Map<String, Object>> getPaginatedProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Double minPrice
+    ) {
+        Map<String, Object> response = productService.getPaginatedSortedFilteredProducts(
+                page, size, sortBy, sortDir, keyword, minPrice
+        );
+        return ResponseEntity.ok(response);
     }
 }
