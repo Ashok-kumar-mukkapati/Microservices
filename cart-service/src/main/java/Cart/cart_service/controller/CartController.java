@@ -49,9 +49,13 @@ public class CartController {
     }
 
     @PostMapping("/items")
-    public ResponseEntity<CartItem> addCartItem(@RequestBody CartItem cartItem) {
-        CartItem savedCartItem = cartService.addCartItem(cartItem);
-        return ResponseEntity.ok(savedCartItem);
+    public ResponseEntity<?> addCartItem(@RequestBody CartItem cartItem) {
+        try {
+            CartItem savedCartItem = cartService.addCartItem(cartItem);
+            return ResponseEntity.ok(savedCartItem);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     @GetMapping("/items")
@@ -62,9 +66,9 @@ public class CartController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCart(@PathVariable Integer id) {
-        Cart cart = cartService.getCartById(id);
+        Cart existingCart = cartService.getCartById(id);
 
-        if (cart == null) {
+        if (existingCart == null) {
             return ResponseEntity.notFound().build();
         }
 

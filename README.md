@@ -8,6 +8,7 @@
 - 1E Controller Layer (CRUD APIs)
 - 1F Pagination + Sorting + Java Streams
 - 1G Native Query
+- 1H WebClient Integration
 
 ## Services
 - product-service (Port 8081)
@@ -25,12 +26,23 @@
 - carts
 - cart_items
 
-## 1G Native Query Feature
-Added a native SQL query in `ProductRepository` to fetch all products whose price is greater than a given input value.
+## 1H WebClient Integration
+`cart-service` now calls `product-service` using Spring WebClient.
 
-### Native Query API
-- `GET /products/price-greater-than?price=1000`
+### Flow
+Client → cart-service → product-service → validation → save cart item
 
-### SQL Used
-```sql
-SELECT * FROM products WHERE price > ?1
+### Validation Done
+- product existence check
+- stock availability check
+
+### APIs Used
+#### product-service
+- `GET /products/{id}`
+
+#### cart-service
+- `POST /carts/items`
+- `GET /carts/items`
+
+### WebClient Base URL
+- `http://localhost:8081`

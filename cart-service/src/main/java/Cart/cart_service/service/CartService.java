@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import Cart.cart_service.CartEntity.Cart;
 import Cart.cart_service.CartEntity.CartItem;
+import Cart.cart_service.dto.ProductResponse;
 import Cart.cart_service.repository.CartItemRepository;
 import Cart.cart_service.repository.CartRepository;
 
@@ -15,10 +17,14 @@ public class CartService {
 
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
+    private final WebClient webClient;
 
-    public CartService(CartRepository cartRepository, CartItemRepository cartItemRepository) {
+    public CartService(CartRepository cartRepository,
+                       CartItemRepository cartItemRepository,
+                       WebClient webClient) {
         this.cartRepository = cartRepository;
         this.cartItemRepository = cartItemRepository;
+        this.webClient = webClient;
     }
 
     public Cart createCart(Cart cart) {
@@ -35,6 +41,23 @@ public class CartService {
     }
 
     public CartItem addCartItem(CartItem cartItem) {
+        Integer productId = cartItem.getProductId();
+        Integer quantity = cartItem.getQuantity();
+
+        ProductResponse product = webClient.get()
+                .uri("/products/{id}", productId)
+                .retrieve()
+                .bodyToMono(ProductResponse.class)
+                .block();
+
+        if (product == null) {
+            throw new RuntimeException("Product not found in product-service");
+        }
+
+        if (product.getStock() < quantity) {
+            throw new RuntimeException("Insufficient stock available");
+        }
+
         return cartItemRepository.save(cartItem);
     }
 
