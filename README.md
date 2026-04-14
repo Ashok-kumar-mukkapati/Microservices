@@ -1,19 +1,19 @@
-## 1K CompletableFuture (Async Processing)
+## 1L Validation + Exception + Logging
 
-cart-service uses `CompletableFuture` for async processing while adding cart items.
+### Validation
+- quantity must not be null
+- quantity must be greater than 0
 
-### Async Flow
-- fetch cart asynchronously
-- fetch product asynchronously
-- validate stock asynchronously
-- combine results and save cart item
+### Exception Handling
+- global exception handler added using `@RestControllerAdvice`
 
-### Endpoints
-- `POST /carts/items`
-- `POST /carts/items/async`
+### Logging
+- API calls are logged in controllers
+- service-level business flow is logged
+- validation and runtime errors are logged
+- Kafka producer and consumer events are logged
 
 ### Validation Done
-- parallel async execution works
-- stock validation works
-- valid item saves successfully
-- invalid quantity fails properly
+- invalid quantity requests return proper 400 errors
+- error messages are clear
+- logs print clearly in console

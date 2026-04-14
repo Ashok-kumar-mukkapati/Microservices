@@ -3,6 +3,8 @@ package Product.product_service.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +23,8 @@ import Product.product_service.service.ProductService;
 @RequestMapping("/products")
 public class ProductController {
 
+    private static final Logger log = LoggerFactory.getLogger(ProductController.class);
+
     private final ProductService productService;
 
     public ProductController(ProductService productService) {
@@ -29,18 +33,21 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+        log.info("API CALL: createProduct with name={}", product.getName());
         Product savedProduct = productService.createProduct(product);
         return ResponseEntity.ok(savedProduct);
     }
 
     @GetMapping
     public ResponseEntity<List<Product>> getAllProducts() {
+        log.info("API CALL: getAllProducts");
         List<Product> products = productService.getAllProducts();
         return ResponseEntity.ok(products);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Integer id) {
+        log.info("API CALL: getProductById with id={}", id);
         Product product = productService.getProductById(id);
 
         if (product == null) {
@@ -52,6 +59,7 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Integer id, @RequestBody Product product) {
+        log.info("API CALL: updateProduct with id={}", id);
         Product updatedProduct = productService.updateProduct(id, product);
 
         if (updatedProduct == null) {
@@ -63,6 +71,7 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable Integer id) {
+        log.info("API CALL: deleteProduct with id={}", id);
         Product existingProduct = productService.getProductById(id);
 
         if (existingProduct == null) {
@@ -82,6 +91,9 @@ public class ProductController {
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Double minPrice
     ) {
+        log.info("API CALL: getPaginatedProducts page={} size={} sortBy={} sortDir={} keyword={} minPrice={}",
+                page, size, sortBy, sortDir, keyword, minPrice);
+
         Map<String, Object> response = productService.getPaginatedSortedFilteredProducts(
                 page, size, sortBy, sortDir, keyword, minPrice
         );
@@ -90,6 +102,7 @@ public class ProductController {
 
     @GetMapping("/price-greater-than")
     public ResponseEntity<List<Product>> getProductsWithPriceGreaterThan(@RequestParam Double price) {
+        log.info("API CALL: getProductsWithPriceGreaterThan price={}", price);
         List<Product> products = productService.getProductsWithPriceGreaterThan(price);
         return ResponseEntity.ok(products);
     }

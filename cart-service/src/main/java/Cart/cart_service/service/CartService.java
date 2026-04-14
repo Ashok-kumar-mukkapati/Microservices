@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -17,6 +19,8 @@ import Cart.cart_service.repository.CartRepository;
 
 @Service
 public class CartService {
+
+    private static final Logger log = LoggerFactory.getLogger(CartService.class);
 
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
@@ -34,14 +38,17 @@ public class CartService {
     }
 
     public Cart createCart(Cart cart) {
+        log.info("Creating cart for userId={}", cart.getUserId());
         return cartRepository.save(cart);
     }
 
     public List<Cart> getAllCarts() {
+        log.info("Fetching all carts");
         return cartRepository.findAll();
     }
 
     public Cart getCartById(Integer id) {
+        log.info("Fetching cart by id={}", id);
         Optional<Cart> optionalCart = cartRepository.findById(id);
         return optionalCart.orElse(null);
     }
@@ -51,9 +58,11 @@ public class CartService {
             return addCartItemAsync(cartItem).get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            log.error("Async processing interrupted", e);
             throw new RuntimeException("Async processing interrupted");
         } catch (ExecutionException e) {
-            throw new RuntimeException(e.getCause().getMessage());
+            log.error("Execution exception while adding cart item", e);
+            throw new RuntimeException(e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
         }
     }
 
@@ -66,12 +75,17 @@ public class CartService {
         Integer productId = cartItem.getProductId();
         Integer quantity = cartItem.getQuantity();
 
-        CompletableFuture<Cart> cartFuture = CompletableFuture.supplyAsync(() ->
-                cartRepository.findById(cartId)
-                        .orElseThrow(() -> new RuntimeException("Cart not found"))
-        );
+        log.info("Starting async addCartItem for cartId={} productId={} quantity={}", cartId, productId, quantity);
+
+        CompletableFuture<Cart> cartFuture = CompletableFuture.supplyAsync(() -> {
+            log.info("Async fetch cart with id={}", cartId);
+            return cartRepository.findById(cartId)
+                    .orElseThrow(() -> new RuntimeException("Cart not found"));
+        });
 
         CompletableFuture<ProductResponse> productFuture = CompletableFuture.supplyAsync(() -> {
+            log.info("Async fetch product from product-service with id={}", productId);
+
             ProductResponse product = webClient.get()
                     .uri("/products/{id}", productId)
                     .retrieve()
@@ -86,6 +100,9 @@ public class CartService {
         });
 
         CompletableFuture<ProductResponse> validatedProductFuture = productFuture.thenApplyAsync(product -> {
+            log.info("Async validate stock for productId={} availableStock={} requestedQuantity={}",
+                    product.getId(), product.getStock(), quantity);
+
             if (product.getStock() < quantity) {
                 throw new RuntimeException("Insufficient stock available");
             }
@@ -95,6 +112,8 @@ public class CartService {
         return cartFuture.thenCombine(validatedProductFuture, (existingCart, validatedProduct) -> {
             cartItem.setCart(existingCart);
             CartItem savedCartItem = cartItemRepository.save(cartItem);
+
+            log.info("Cart item saved successfully with id={}", savedCartItem.getId());
 
             CartEvent cartEvent = new CartEvent(
                     existingCart.getId(),
@@ -110,14 +129,17 @@ public class CartService {
     }
 
     public List<CartItem> getAllCartItems() {
+        log.info("Fetching all cart items");
         return cartItemRepository.findAll();
     }
 
     public void deleteCart(Integer id) {
+        log.info("Deleting cart with id={}", id);
         cartRepository.deleteById(id);
     }
 
     public void deleteCartItem(Integer id) {
+        log.info("Deleting cart item with id={}", id);
         cartItemRepository.deleteById(id);
     }
 }
