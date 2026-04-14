@@ -1,15 +1,19 @@
-## 1I Kafka Producer
+## 1K CompletableFuture (Async Processing)
 
-When a valid cart item is added in `cart-service`, a Kafka event is published to the `cart-events` topic.
+cart-service uses `CompletableFuture` for async processing while adding cart items.
 
-### Kafka Topic
-- `cart-events`
+### Async Flow
+- fetch cart asynchronously
+- fetch product asynchronously
+- validate stock asynchronously
+- combine results and save cart item
 
-### Event Example
-```json
-{
-  "cartId": 1,
-  "productId": 1,
-  "quantity": 2,
-  "eventType": "ITEM_ADDED"
-}
+### Endpoints
+- `POST /carts/items`
+- `POST /carts/items/async`
+
+### Validation Done
+- parallel async execution works
+- stock validation works
+- valid item saves successfully
+- invalid quantity fails properly

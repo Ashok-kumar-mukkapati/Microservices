@@ -1,6 +1,7 @@
 package Cart.cart_service.controller;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -56,6 +57,15 @@ public class CartController {
         } catch (RuntimeException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
         }
+    }
+
+    @PostMapping("/items/async")
+    public CompletableFuture<ResponseEntity<Object>> addCartItemAsync(@RequestBody CartItem cartItem) {
+        return cartService.addCartItemAsync(cartItem)
+                .thenApply(savedCartItem -> ResponseEntity.ok((Object) savedCartItem))
+                .exceptionally(ex -> ResponseEntity.badRequest().body(
+                        ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage()
+                ));
     }
 
     @GetMapping("/items")

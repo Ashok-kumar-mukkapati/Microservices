@@ -2,6 +2,8 @@ package Cart.cart_service.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -45,6 +47,17 @@ public class CartService {
     }
 
     public CartItem addCartItem(CartItem cartItem) {
+        try {
+            return addCartItemAsync(cartItem).get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Async processing interrupted");
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e.getCause().getMessage());
+        }
+    }
+
+    public CompletableFuture<CartItem> addCartItemAsync(CartItem cartItem) {
         if (cartItem.getCart() == null || cartItem.getCart().getId() == null) {
             throw new RuntimeException("Cart id is required");
         }
@@ -53,36 +66,47 @@ public class CartService {
         Integer productId = cartItem.getProductId();
         Integer quantity = cartItem.getQuantity();
 
-        Cart existingCart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
-
-        ProductResponse product = webClient.get()
-                .uri("/products/{id}", productId)
-                .retrieve()
-                .bodyToMono(ProductResponse.class)
-                .block();
-
-        if (product == null) {
-            throw new RuntimeException("Product not found in product-service");
-        }
-
-        if (product.getStock() < quantity) {
-            throw new RuntimeException("Insufficient stock available");
-        }
-
-        cartItem.setCart(existingCart);
-        CartItem savedCartItem = cartItemRepository.save(cartItem);
-
-        CartEvent cartEvent = new CartEvent(
-                existingCart.getId(),
-                savedCartItem.getProductId(),
-                savedCartItem.getQuantity(),
-                "ITEM_ADDED"
+        CompletableFuture<Cart> cartFuture = CompletableFuture.supplyAsync(() ->
+                cartRepository.findById(cartId)
+                        .orElseThrow(() -> new RuntimeException("Cart not found"))
         );
 
-        kafkaProducerService.sendCartEvent(cartEvent);
+        CompletableFuture<ProductResponse> productFuture = CompletableFuture.supplyAsync(() -> {
+            ProductResponse product = webClient.get()
+                    .uri("/products/{id}", productId)
+                    .retrieve()
+                    .bodyToMono(ProductResponse.class)
+                    .block();
 
-        return savedCartItem;
+            if (product == null) {
+                throw new RuntimeException("Product not found in product-service");
+            }
+
+            return product;
+        });
+
+        CompletableFuture<ProductResponse> validatedProductFuture = productFuture.thenApplyAsync(product -> {
+            if (product.getStock() < quantity) {
+                throw new RuntimeException("Insufficient stock available");
+            }
+            return product;
+        });
+
+        return cartFuture.thenCombine(validatedProductFuture, (existingCart, validatedProduct) -> {
+            cartItem.setCart(existingCart);
+            CartItem savedCartItem = cartItemRepository.save(cartItem);
+
+            CartEvent cartEvent = new CartEvent(
+                    existingCart.getId(),
+                    savedCartItem.getProductId(),
+                    savedCartItem.getQuantity(),
+                    "ITEM_ADDED"
+            );
+
+            kafkaProducerService.sendCartEvent(cartEvent);
+
+            return savedCartItem;
+        });
     }
 
     public List<CartItem> getAllCartItems() {
