@@ -1,12 +1,12 @@
 import ProductListPage from "./pages/ProductListPage";
-import AddProductPage from "./pages/AddProductPage";
+import CartPage from "./pages/CartPage";
 
 function App() {
   return (
     <div>
-      <AddProductPage />
-      <hr />
       <ProductListPage />
+      <hr />
+      <CartPage />
     </div>
   );
 }

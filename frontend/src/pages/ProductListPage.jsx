@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../features/productSlice";
+import { addProductToCart } from "../services/cartService";
 
 function ProductListPage() {
   const dispatch = useDispatch();
@@ -10,6 +11,16 @@ function ProductListPage() {
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
+
+  const handleAddToCart = async (productId) => {
+    try {
+      await addProductToCart(productId, 1);
+      alert("Product added to cart successfully");
+    } catch (error) {
+      console.error("Error adding product to cart:", error);
+      alert("Failed to add product to cart");
+    }
+  };
 
   return (
     <div>
@@ -25,6 +36,7 @@ function ProductListPage() {
             <th>Name</th>
             <th>Price</th>
             <th>Stock</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -34,6 +46,11 @@ function ProductListPage() {
               <td>{product.name}</td>
               <td>{product.price}</td>
               <td>{product.stock}</td>
+              <td>
+                <button onClick={() => handleAddToCart(product.id)}>
+                  Add to Cart
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
