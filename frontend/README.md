@@ -65,6 +65,14 @@ Frontend UI for the Microservices Assignment.
 - Default route redirects to /products
 - Future flags enabled for React Router v7 compatibility
 
+### 2I - Custom Hooks + Clean Architecture
+- Created custom hooks: useProducts, useCart, useAddProduct
+- Moved page logic out of UI components
+- Components now focus on rendering only
+- Services handle API communication
+- Redux handles product state
+- Hooks handle reusable UI logic
+
 ## Run Project
 
 ```bash
