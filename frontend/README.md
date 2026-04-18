@@ -73,6 +73,12 @@ Frontend UI for the Microservices Assignment.
 - Redux handles product state
 - Hooks handle reusable UI logic
 
+### Additional Product Management Enhancements
+- Added Update Product page
+- Added Update action from Product List
+- Added Delete action from Product List
+- Product delete flow integrated with backend API
+
 ## Run Project
 
 ```bash

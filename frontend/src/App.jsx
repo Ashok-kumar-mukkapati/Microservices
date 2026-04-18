@@ -2,6 +2,7 @@ import { Link, Routes, Route, Navigate } from "react-router-dom";
 import AddProductPage from "./pages/AddProductPage";
 import ProductListPage from "./pages/ProductListPage";
 import CartPage from "./pages/CartPage";
+import UpdateProductPage from "./pages/UpdateProductPage";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <nav>
         <Link to="/products">Products</Link> |{" "}
         <Link to="/add-product">Add Product</Link> |{" "}
+        <Link to="/update-product">Update Product</Link> |{" "}
         <Link to="/cart">Cart</Link>
       </nav>
 
@@ -20,6 +22,7 @@ function App() {
         <Route path="/" element={<Navigate to="/products" />} />
         <Route path="/products" element={<ProductListPage />} />
         <Route path="/add-product" element={<AddProductPage />} />
+        <Route path="/update-product" element={<UpdateProductPage />} />
         <Route path="/cart" element={<CartPage />} />
       </Routes>
     </div>

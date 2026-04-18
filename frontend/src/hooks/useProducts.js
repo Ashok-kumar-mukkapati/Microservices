@@ -2,11 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../features/productSlice";
 import { addProductToCart } from "../services/cartService";
-import { getPagedProducts } from "../services/productService";
+import { deleteProduct, getPagedProducts } from "../services/productService";
 
 function useProducts() {
   const dispatch = useDispatch();
-  const reduxProducts = useSelector((state) => state.products);
+  useSelector((state) => state.products);
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -66,8 +66,18 @@ function useProducts() {
     }
   };
 
+  const handleDeleteProduct = async (productId) => {
+    try {
+      await deleteProduct(productId);
+      await loadProducts(page, pageSize);
+      return { success: true, message: "Product deleted successfully." };
+    } catch (err) {
+      console.error("Error deleting product:", err);
+      return { success: false, message: "Failed to delete product." };
+    }
+  };
+
   return {
-    reduxProducts,
     filteredProducts,
     loading,
     error,
@@ -81,6 +91,7 @@ function useProducts() {
     setPageSize,
     totalPages,
     handleAddToCart,
+    handleDeleteProduct,
   };
 }
 

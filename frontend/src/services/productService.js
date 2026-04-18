@@ -16,3 +16,13 @@ export const getPagedProducts = async (page = 0, size = 3) => {
   const response = await axios.get(`${PRODUCT_BASE_URL}/products/paged?page=${page}&size=${size}`);
   return response.data;
 };
+
+export const updateProduct = async (id, productData) => {
+  const response = await axios.put(`${PRODUCT_BASE_URL}/products/${id}`, productData);
+  return response.data;
+};
+
+export const deleteProduct = async (id) => {
+  const response = await axios.delete(`${PRODUCT_BASE_URL}/products/${id}`);
+  return response.data;
+};

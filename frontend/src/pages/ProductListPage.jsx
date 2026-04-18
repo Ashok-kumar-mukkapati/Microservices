@@ -1,6 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import useProducts from "../hooks/useProducts";
 
 function ProductListPage() {
+  const navigate = useNavigate();
+
   const {
     filteredProducts,
     loading,
@@ -15,11 +18,27 @@ function ProductListPage() {
     setPageSize,
     totalPages,
     handleAddToCart,
+    handleDeleteProduct,
   } = useProducts();
 
   const onAddToCart = async (productId) => {
     const result = await handleAddToCart(productId);
     alert(result.message);
+  };
+
+  const onDeleteProduct = async (productId) => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete product ${productId}?`
+    );
+
+    if (!confirmDelete) return;
+
+    const result = await handleDeleteProduct(productId);
+    alert(result.message);
+  };
+
+  const onUpdateProduct = (productId) => {
+    navigate(`/update-product?id=${productId}`);
   };
 
   if (loading) return <h2>Loading products...</h2>;
@@ -53,8 +72,6 @@ function ProductListPage() {
         <option value={3}>3 per page</option>
         <option value={5}>5 per page</option>
         <option value={10}>10 per page</option>
-        <option value={20}>20 per page</option>
-        <option value={50}>50 per page</option>
       </select>
 
       <table border="1" cellPadding="10" style={{ borderCollapse: "collapse" }}>
@@ -64,7 +81,9 @@ function ProductListPage() {
             <th>Name</th>
             <th>Price</th>
             <th>Stock</th>
-            <th>Action</th>
+            <th>Add</th>
+            <th>Update</th>
+            <th>Delete</th>
           </tr>
         </thead>
 
@@ -75,9 +94,22 @@ function ProductListPage() {
               <td>{product.name}</td>
               <td>{product.price}</td>
               <td>{product.stock}</td>
+
               <td>
                 <button onClick={() => onAddToCart(product.id)}>
                   Add to Cart
+                </button>
+              </td>
+
+              <td>
+                <button onClick={() => onUpdateProduct(product.id)}>
+                  Update
+                </button>
+              </td>
+
+              <td>
+                <button onClick={() => onDeleteProduct(product.id)}>
+                  Delete
                 </button>
               </td>
             </tr>
