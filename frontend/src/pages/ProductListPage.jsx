@@ -1,25 +1,22 @@
-import { useEffect, useState } from "react";
-import { getAllProducts } from "../services/productService";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProducts } from "../features/productSlice";
 
 function ProductListPage() {
-  const [products, setProducts] = useState([]);
+  const dispatch = useDispatch();
+
+  const { items, loading, error } = useSelector((state) => state.products);
 
   useEffect(() => {
-    loadProducts();
-  }, []);
-
-  const loadProducts = async () => {
-    try {
-      const data = await getAllProducts();
-      setProducts(data);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    }
-  };
+    dispatch(fetchProducts());
+  }, [dispatch]);
 
   return (
     <div>
       <h1>Product List</h1>
+
+      {loading && <p>Loading products...</p>}
+      {error && <p>Error: {error}</p>}
 
       <table border="1" cellPadding="10" style={{ borderCollapse: "collapse" }}>
         <thead>
@@ -31,7 +28,7 @@ function ProductListPage() {
           </tr>
         </thead>
         <tbody>
-          {products.map((product) => (
+          {items.map((product) => (
             <tr key={product.id}>
               <td>{product.id}</td>
               <td>{product.name}</td>
