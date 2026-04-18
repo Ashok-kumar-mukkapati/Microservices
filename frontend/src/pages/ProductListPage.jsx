@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../features/productSlice";
 import { addProductToCart } from "../services/cartService";
@@ -8,9 +8,25 @@ function ProductListPage() {
 
   const { items, loading, error } = useSelector((state) => state.products);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
+
+  const filteredProducts = useMemo(() => {
+    return items.filter((product) => {
+      const matchesSearch = product.name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+
+      const matchesPrice =
+        maxPrice === "" || product.price <= Number(maxPrice);
+
+      return matchesSearch && matchesPrice;
+    });
+  }, [items, searchTerm, maxPrice]);
 
   const handleAddToCart = async (productId) => {
     try {
@@ -34,6 +50,22 @@ function ProductListPage() {
     <div>
       <h1>Product List</h1>
 
+      <div>
+        <input
+          type="text"
+          placeholder="Search by product name"
+          value={searchTerm}
+          onChange={(event) => setSearchTerm(event.target.value)}
+        />
+
+        <input
+          type="number"
+          placeholder="Filter by max price"
+          value={maxPrice}
+          onChange={(event) => setMaxPrice(event.target.value)}
+        />
+      </div>
+
       <table border="1" cellPadding="10" style={{ borderCollapse: "collapse" }}>
         <thead>
           <tr>
@@ -45,7 +77,7 @@ function ProductListPage() {
           </tr>
         </thead>
         <tbody>
-          {items.map((product) => (
+          {filteredProducts.map((product) => (
             <tr key={product.id}>
               <td>{product.id}</td>
               <td>{product.name}</td>

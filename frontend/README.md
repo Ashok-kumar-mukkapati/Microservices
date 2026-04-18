@@ -45,6 +45,12 @@ Frontend UI for the Microservices Assignment.
 - Cart Page loading/error state
 - Add Product submit loading/error state
 
+### 2F - Search + Filter
+- Search by product name
+- Filter products by max price
+- useMemo used for optimized filtering
+- Real-time filtered product list
+
 ## Run Project
 
 ```bash
