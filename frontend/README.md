@@ -58,6 +58,13 @@ Frontend UI for the Microservices Assignment.
 - Dynamic page size selector (3 / 5 / 10)
 - Product list updates based on page and selected size
 
+### 2H - Routing
+- React Router v6 integrated
+- Products, Add Product, Cart routes created
+- Navigation without page reload
+- Default route redirects to /products
+- Future flags enabled for React Router v7 compatibility
+
 ## Run Project
 
 ```bash
