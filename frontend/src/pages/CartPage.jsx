@@ -3,6 +3,8 @@ import { getAllCartItems } from "../services/cartService";
 
 function CartPage() {
   const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     loadCartItems();
@@ -10,12 +12,26 @@ function CartPage() {
 
   const loadCartItems = async () => {
     try {
+      setLoading(true);
+      setError("");
+
       const data = await getAllCartItems();
       setCartItems(data);
-    } catch (error) {
-      console.error("Error fetching cart items:", error);
+    } catch (err) {
+      console.error("Error fetching cart items:", err);
+      setError("Failed to load cart items.");
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return <h2>Loading cart items...</h2>;
+  }
+
+  if (error) {
+    return <h2>{error}</h2>;
+  }
 
   return (
     <div>

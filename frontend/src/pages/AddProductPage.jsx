@@ -8,6 +8,10 @@ function AddProductPage() {
     stock: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
   const handleChange = (event) => {
     const { name, value } = event.target;
 
@@ -21,6 +25,10 @@ function AddProductPage() {
     event.preventDefault();
 
     try {
+      setLoading(true);
+      setError("");
+      setSuccessMessage("");
+
       const payload = {
         name: formData.name,
         price: Number(formData.price),
@@ -28,22 +36,27 @@ function AddProductPage() {
       };
 
       await createProduct(payload);
-      alert("Product created successfully");
 
+      setSuccessMessage("Product created successfully.");
       setFormData({
         name: "",
         price: "",
         stock: "",
       });
-    } catch (error) {
-      console.error("Error creating product:", error);
-      alert("Failed to create product");
+    } catch (err) {
+      console.error("Error creating product:", err);
+      setError("Failed to create product.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div>
       <h1>Add Product</h1>
+
+      {error && <p>{error}</p>}
+      {successMessage && <p>{successMessage}</p>}
 
       <form onSubmit={handleSubmit}>
         <div>
@@ -79,7 +92,9 @@ function AddProductPage() {
           />
         </div>
 
-        <button type="submit">Create Product</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Creating..." : "Create Product"}
+        </button>
       </form>
     </div>
   );

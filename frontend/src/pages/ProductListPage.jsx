@@ -22,12 +22,17 @@ function ProductListPage() {
     }
   };
 
+  if (loading) {
+    return <h2>Loading products...</h2>;
+  }
+
+  if (error) {
+    return <h2>Error: {error}</h2>;
+  }
+
   return (
     <div>
       <h1>Product List</h1>
-
-      {loading && <p>Loading products...</p>}
-      {error && <p>Error: {error}</p>}
 
       <table border="1" cellPadding="10" style={{ borderCollapse: "collapse" }}>
         <thead>
