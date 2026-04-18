@@ -51,6 +51,13 @@ Frontend UI for the Microservices Assignment.
 - useMemo used for optimized filtering
 - Real-time filtered product list
 
+### 2G - Pagination UI
+- Backend pagination API integrated
+- Prev / Next navigation added
+- Current page indicator displayed
+- Dynamic page size selector (3 / 5 / 10)
+- Product list updates based on page and selected size
+
 ## Run Project
 
 ```bash

@@ -11,3 +11,8 @@ export const createProduct = async (productData) => {
   const response = await axios.post(`${PRODUCT_BASE_URL}/products`, productData);
   return response.data;
 };
+
+export const getPagedProducts = async (page = 0, size = 3) => {
+  const response = await axios.get(`${PRODUCT_BASE_URL}/products/paged?page=${page}&size=${size}`);
+  return response.data;
+};
