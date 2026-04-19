@@ -41,3 +41,13 @@ export const removeCartItemQuantity = async (itemId, quantity) => {
   );
   return response.data;
 };
+
+export const createCart = async (cartData) => {
+  const response = await axios.post(`${CART_BASE_URL}/carts`, cartData);
+  return response.data;
+};
+
+export const deleteCart = async (cartId) => {
+  const response = await axios.delete(`${CART_BASE_URL}/carts/${cartId}`);
+  return response.data;
+};

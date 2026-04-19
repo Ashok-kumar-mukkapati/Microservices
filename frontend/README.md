@@ -102,6 +102,11 @@ Frontend UI for the Microservices Assignment.
 - Product stock automatically updates on add/remove
 - Frontend validation prevents invalid quantity requests
 
+### Cart Administration Enhancements
+- Added Create New Cart option on Available Carts page
+- Added Delete Cart option on Available Carts page
+- Product List cart dropdown reflects newly created and deleted carts
+
 ## Run Project
 
 ```bash
