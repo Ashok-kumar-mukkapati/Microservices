@@ -79,6 +79,12 @@ Frontend UI for the Microservices Assignment.
 - Added Delete action from Product List
 - Product delete flow integrated with backend API
 
+### Additional Cart Browsing Enhancements
+- Added Carts List page to display available carts
+- Added Cart Details page to show items for a selected cart
+- Each cart shows cart id, user id, and item count
+- View Items navigation added from cart list to selected cart details
+
 ## Run Project
 
 ```bash

@@ -1,8 +1,9 @@
 import { Link, Routes, Route, Navigate } from "react-router-dom";
 import AddProductPage from "./pages/AddProductPage";
 import ProductListPage from "./pages/ProductListPage";
-import CartPage from "./pages/CartPage";
 import UpdateProductPage from "./pages/UpdateProductPage";
+import CartsListPage from "./pages/CartsListPage";
+import CartDetailsPage from "./pages/CartDetailsPage";
 
 function App() {
   return (
@@ -13,7 +14,7 @@ function App() {
         <Link to="/products">Products</Link> |{" "}
         <Link to="/add-product">Add Product</Link> |{" "}
         <Link to="/update-product">Update Product</Link> |{" "}
-        <Link to="/cart">Cart</Link>
+        <Link to="/carts">Cart</Link>
       </nav>
 
       <hr />
@@ -23,7 +24,8 @@ function App() {
         <Route path="/products" element={<ProductListPage />} />
         <Route path="/add-product" element={<AddProductPage />} />
         <Route path="/update-product" element={<UpdateProductPage />} />
-        <Route path="/cart" element={<CartPage />} />
+        <Route path="/carts" element={<CartsListPage />} />
+        <Route path="/cart-details/:id" element={<CartDetailsPage />} />
       </Routes>
     </div>
   );
