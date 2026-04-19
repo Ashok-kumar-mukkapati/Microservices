@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   getAllCarts,
-  deleteCartItem,
+  removeCartItemQuantity,
 } from "../services/cartService";
 import { getAllProducts } from "../services/productService";
 
@@ -57,24 +57,34 @@ function useCartDetails(cartId) {
     }
   };
 
-  const handleDeleteItem = async (itemId) => {
+  const handleDeleteItem = async (itemId, quantityToRemove) => {
     try {
-      await deleteCartItem(itemId);
-      await loadCartDetails();
+        await removeCartItemQuantity(itemId, quantityToRemove);
+        await loadCartDetails();
 
-      return {
-        success: true,
-        message: "Item removed from cart successfully.",
-      };
+        return {
+            success: true,
+            message: "Cart updated successfully.",
+        };
     } catch (err) {
-      console.error(err);
+        if (err?.response?.status !== 400) {
+            console.error(err);
+        }
 
-      return {
+        const responseData = err?.response?.data;
+
+    return {
         success: false,
-        message: "Failed to remove item from cart.",
-      };
+        message:
+            typeof responseData === "string"
+                ? responseData
+                : responseData?.message ||
+                    responseData?.error ||
+                    JSON.stringify(responseData) ||
+                    "please enter the quantity less than the available quantity.",
+    };
     }
-  };
+    };
 
   return {
     cart,

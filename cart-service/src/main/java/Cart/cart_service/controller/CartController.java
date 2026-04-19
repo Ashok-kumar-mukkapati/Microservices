@@ -9,10 +9,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import Cart.cart_service.CartEntity.Cart;
@@ -38,6 +40,22 @@ public class CartController {
         log.info("API CALL: createCart");
         Cart savedCart = cartService.createCart(cart);
         return ResponseEntity.ok(savedCart);
+    }
+
+    @PatchMapping("/items/{id}/remove-quantity")
+    public ResponseEntity<?> removeCartItemQuantity(
+            @PathVariable Integer id,
+            @RequestParam Integer quantity
+    ) {
+        log.info("API CALL: removeCartItemQuantity with id={} quantity={}", id, quantity);
+
+        CartItem updatedCartItem = cartService.removeCartItemQuantity(id, quantity);
+
+        if (updatedCartItem == null) {
+            return ResponseEntity.ok("Cart item removed completely");
+        }
+
+        return ResponseEntity.ok(updatedCartItem);
     }
 
     @GetMapping

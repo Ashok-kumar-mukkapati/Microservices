@@ -29,6 +29,34 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+    public Product reduceStock(Integer id, Integer quantity) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+
+        if (quantity == null || quantity <= 0) {
+            throw new RuntimeException("Quantity must be greater than 0");
+        }
+
+        if (product.getStock() < quantity) {
+            throw new RuntimeException("Only " + product.getStock() + " items available in stock");
+        }
+
+        product.setStock(product.getStock() - quantity);
+        return productRepository.save(product);
+    }
+
+    public Product increaseStock(Integer id, Integer quantity) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+
+        if (quantity == null || quantity <= 0) {
+            throw new RuntimeException("Quantity must be greater than 0");
+        }
+
+        product.setStock(product.getStock() + quantity);
+        return productRepository.save(product);
+    }
+
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }

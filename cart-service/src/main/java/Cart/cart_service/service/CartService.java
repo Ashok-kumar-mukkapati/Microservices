@@ -75,6 +75,10 @@ public class CartService {
         Integer productId = cartItem.getProductId();
         Integer quantity = cartItem.getQuantity();
 
+        if (quantity == null || quantity <= 0) {
+            throw new RuntimeException("Quantity must be greater than 0");
+        }
+
         log.info("Starting async addCartItem for cartId={} productId={} quantity={}", cartId, productId, quantity);
 
         CompletableFuture<Cart> cartFuture = CompletableFuture.supplyAsync(() -> {
@@ -104,21 +108,45 @@ public class CartService {
                     product.getId(), product.getStock(), quantity);
 
             if (product.getStock() < quantity) {
-                throw new RuntimeException("Insufficient stock available");
+                throw new RuntimeException("Only " + product.getStock() + " items available in stock");
             }
+
             return product;
         });
 
         return cartFuture.thenCombine(validatedProductFuture, (existingCart, validatedProduct) -> {
-            cartItem.setCart(existingCart);
-            CartItem savedCartItem = cartItemRepository.save(cartItem);
+            Optional<CartItem> existingCartItemOptional =
+                    cartItemRepository.findByCart_IdAndProductId(cartId, productId);
 
-            log.info("Cart item saved successfully with id={}", savedCartItem.getId());
+            CartItem savedCartItem;
+
+            if (existingCartItemOptional.isPresent()) {
+                CartItem existingCartItem = existingCartItemOptional.get();
+                existingCartItem.setQuantity(existingCartItem.getQuantity() + quantity);
+                savedCartItem = cartItemRepository.save(existingCartItem);
+
+                log.info("Existing cart item updated successfully with id={} newQuantity={}",
+                        savedCartItem.getId(), savedCartItem.getQuantity());
+            } else {
+                cartItem.setCart(existingCart);
+                savedCartItem = cartItemRepository.save(cartItem);
+
+                log.info("New cart item saved successfully with id={}", savedCartItem.getId());
+            }
+
+            webClient.patch()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/products/{id}/reduce-stock")
+                            .queryParam("quantity", quantity)
+                            .build(productId))
+                    .retrieve()
+                    .bodyToMono(ProductResponse.class)
+                    .block();
 
             CartEvent cartEvent = new CartEvent(
                     existingCart.getId(),
                     savedCartItem.getProductId(),
-                    savedCartItem.getQuantity(),
+                    quantity,
                     "ITEM_ADDED"
             );
 
@@ -142,4 +170,41 @@ public class CartService {
         log.info("Deleting cart item with id={}", id);
         cartItemRepository.deleteById(id);
     }
+
+    public CartItem removeCartItemQuantity(Integer itemId, Integer quantityToRemove) {
+        log.info("Removing quantity from cart item. itemId={} quantityToRemove={}", itemId, quantityToRemove);
+
+        if (quantityToRemove == null || quantityToRemove <= 0) {
+            throw new RuntimeException("Quantity to remove must be greater than 0");
+        }
+
+        CartItem existingCartItem = cartItemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Cart item not found"));
+
+        Integer currentQuantity = existingCartItem.getQuantity();
+
+        if (quantityToRemove > currentQuantity) {
+            throw new RuntimeException("Only " + currentQuantity + " quantity available in cart. Please enter correct quantity");
+        }
+
+        webClient.patch()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/products/{id}/increase-stock")
+                        .queryParam("quantity", quantityToRemove)
+                        .build(existingCartItem.getProductId()))
+                .retrieve()
+                .bodyToMono(ProductResponse.class)
+                .block();
+
+        if (quantityToRemove.equals(currentQuantity)) {
+            cartItemRepository.deleteById(itemId);
+            log.info("Cart item deleted completely. itemId={}", itemId);
+            return null;
+        } else {
+            existingCartItem.setQuantity(currentQuantity - quantityToRemove);
+            CartItem updatedCartItem = cartItemRepository.save(existingCartItem);
+            log.info("Cart item quantity updated. itemId={} newQuantity={}", itemId, updatedCartItem.getQuantity());
+            return updatedCartItem;
+        }
+    } 
 }

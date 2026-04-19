@@ -95,6 +95,13 @@ Frontend UI for the Microservices Assignment.
 - Users can choose destination cart before adding product
 - Replaced hidden/default cart behavior with explicit cart selection
 
+### Smart Cart Quantity Management
+- Add to Cart supports quantity selection and stock validation
+- Same product in same cart increases quantity instead of duplicate rows
+- Delete Item supports partial quantity removal or full deletion
+- Product stock automatically updates on add/remove
+- Frontend validation prevents invalid quantity requests
+
 ## Run Project
 
 ```bash

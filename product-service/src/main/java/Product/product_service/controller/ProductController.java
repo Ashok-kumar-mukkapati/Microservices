@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -39,6 +40,27 @@ public class ProductController {
         Product savedProduct = productService.createProduct(product);
         return ResponseEntity.ok(savedProduct);
     }
+
+    @PatchMapping("/{id}/reduce-stock")
+    public ResponseEntity<Product> reduceStock(
+            @PathVariable Integer id,
+            @RequestParam Integer quantity
+    ) {
+        log.info("API CALL: reduceStock with id={} quantity={}", id, quantity);
+        Product updatedProduct = productService.reduceStock(id, quantity);
+        return ResponseEntity.ok(updatedProduct);
+    }
+
+    @PatchMapping("/{id}/increase-stock")
+    public ResponseEntity<Product> increaseStock(
+            @PathVariable Integer id,
+            @RequestParam Integer quantity
+    ) {
+        log.info("API CALL: increaseStock with id={} quantity={}", id, quantity);
+        Product updatedProduct = productService.increaseStock(id, quantity);
+        return ResponseEntity.ok(updatedProduct);
+    }
+
 
     @GetMapping
     public ResponseEntity<List<Product>> getAllProducts() {

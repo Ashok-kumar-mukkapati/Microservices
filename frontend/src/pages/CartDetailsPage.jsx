@@ -11,14 +11,26 @@ function CartDetailsPage() {
     handleDeleteItem,
   } = useCartDetails(id);
 
-  const onDeleteItem = async (itemId) => {
-    const confirmDelete = window.confirm(
-      `Remove item ${itemId} from cart?`
-    );
+  const onDeleteItem = async (itemId, availableQuantity) => {
+    const quantityToRemove = window.prompt("Enter quantity to remove from cart:");
 
-    if (!confirmDelete) return;
+    if (!quantityToRemove) return;
 
-    const result = await handleDeleteItem(itemId);
+    const parsedQuantity = Number(quantityToRemove);
+
+    if (Number.isNaN(parsedQuantity) || parsedQuantity <= 0) {
+      alert("Please enter a valid quantity greater than 0.");
+      return;
+    }
+
+    if (parsedQuantity > availableQuantity) {
+      alert(
+        `Only ${availableQuantity} quantity available in cart. Please enter correct quantity`
+      );
+      return;
+    }
+
+    const result = await handleDeleteItem(itemId, parsedQuantity);
     alert(result.message);
   };
 
@@ -57,7 +69,7 @@ function CartDetailsPage() {
                 <td>{item.productName}</td>
                 <td>{item.quantity}</td>
                 <td>
-                  <button onClick={() => onDeleteItem(item.id)}>
+                  <button onClick={() => onDeleteItem(item.id, item.quantity)}>
                     Delete Item
                   </button>
                 </td>
