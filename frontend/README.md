@@ -90,6 +90,11 @@ Frontend UI for the Microservices Assignment.
 - Added Delete Item action in cart details
 - Users can remove products from selected cart
 
+### Add to Cart UX Enhancement
+- Added cart selection dropdown on Product List page
+- Users can choose destination cart before adding product
+- Replaced hidden/default cart behavior with explicit cart selection
+
 ## Run Project
 
 ```bash

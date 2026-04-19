@@ -19,6 +19,9 @@ function ProductListPage() {
     totalPages,
     handleAddToCart,
     handleDeleteProduct,
+    availableCarts,
+    selectedCartId,
+    setSelectedCartId,
   } = useProducts();
 
   const onAddToCart = async (productId) => {
@@ -73,6 +76,20 @@ function ProductListPage() {
         <option value={5}>5 per page</option>
         <option value={10}>10 per page</option>
       </select>
+
+      <div>
+        <label>Select Cart: </label>
+        <select
+          value={selectedCartId}
+          onChange={(e) => setSelectedCartId(e.target.value)}
+        >
+          {availableCarts.map((cart) => (
+            <option key={cart.id} value={cart.id}>
+              Cart {cart.id} - User {cart.userId}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <table border="1" cellPadding="10" style={{ borderCollapse: "collapse" }}>
         <thead>

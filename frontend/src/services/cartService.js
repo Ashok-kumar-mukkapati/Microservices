@@ -12,10 +12,10 @@ export const addCartItem = async (cartItemData) => {
   return response.data;
 };
 
-export const addProductToCart = async (productId, quantity = 1) => {
+export const addProductToCart = async (cartId, productId, quantity = 1) => {
   const payload = {
     cart: {
-      id: 1,
+      id: Number(cartId),
     },
     productId,
     quantity,
