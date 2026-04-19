@@ -3,7 +3,24 @@ import useCartDetails from "../hooks/useCartDetails";
 
 function CartDetailsPage() {
   const { id } = useParams();
-  const { cart, loading, error } = useCartDetails(id);
+
+  const {
+    cart,
+    loading,
+    error,
+    handleDeleteItem,
+  } = useCartDetails(id);
+
+  const onDeleteItem = async (itemId) => {
+    const confirmDelete = window.confirm(
+      `Remove item ${itemId} from cart?`
+    );
+
+    if (!confirmDelete) return;
+
+    const result = await handleDeleteItem(itemId);
+    alert(result.message);
+  };
 
   if (loading) {
     return <h2>Loading cart details...</h2>;
@@ -25,7 +42,9 @@ function CartDetailsPage() {
           <tr>
             <th>Item ID</th>
             <th>Product ID</th>
+            <th>Product Name</th>
             <th>Quantity</th>
+            <th>Delete</th>
           </tr>
         </thead>
 
@@ -35,12 +54,18 @@ function CartDetailsPage() {
               <tr key={item.id}>
                 <td>{item.id}</td>
                 <td>{item.productId}</td>
+                <td>{item.productName}</td>
                 <td>{item.quantity}</td>
+                <td>
+                  <button onClick={() => onDeleteItem(item.id)}>
+                    Delete Item
+                  </button>
+                </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="3">No items found in this cart.</td>
+              <td colSpan="5">No items found in this cart.</td>
             </tr>
           )}
         </tbody>

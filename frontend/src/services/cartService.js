@@ -29,3 +29,8 @@ export const getAllCarts = async () => {
   const response = await axios.get(`${CART_BASE_URL}/carts`);
   return response.data;
 };
+
+export const deleteCartItem = async (itemId) => {
+  const response = await axios.delete(`${CART_BASE_URL}/carts/items/${itemId}`);
+  return response.data;
+};

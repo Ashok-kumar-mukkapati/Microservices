@@ -85,6 +85,11 @@ Frontend UI for the Microservices Assignment.
 - Each cart shows cart id, user id, and item count
 - View Items navigation added from cart list to selected cart details
 
+### Additional Cart Management Enhancements
+- Added product name column in cart details
+- Added Delete Item action in cart details
+- Users can remove products from selected cart
+
 ## Run Project
 
 ```bash
