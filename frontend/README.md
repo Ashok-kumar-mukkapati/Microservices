@@ -107,6 +107,8 @@ Frontend UI for the Microservices Assignment.
 - Added Delete Cart option on Available Carts page
 - Product List cart dropdown reflects newly created and deleted carts
 
+### - React StrictMode was removed in local development to avoid duplicate effect-driven API calls during demo/testing
+
 ## Run Project
 
 ```bash
